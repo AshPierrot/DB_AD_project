@@ -4,7 +4,6 @@
 docker build -t postgres-with-data . \
 docker run -d -p 5432:5432 postgres-with-data \
 psql -h localhost -p 5432 -U myuser -d mydatabase \
-password = mypassword \
 
 cd datalens \
 docker compose up -d \
