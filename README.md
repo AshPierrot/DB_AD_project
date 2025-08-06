@@ -8,7 +8,6 @@ psql -h localhost -p 5432 -U myuser -d mydatabase \
 cd datalens \
 docker compose up -d \
 создаем connection \
-![alt text](image.png) \
 
 constraint-ы и дефолты обрабатываются успешно. в таблице youtube_video есть поле duration, которое объявлено так: 
 
