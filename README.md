@@ -1,41 +1,42 @@
-# Data Platform Infrastructure
+## Setup
 
-Infrastructure-as-Code project for deploying a complete analytics database environment with Docker, DDL migrations, synthetic test data generation, and BI integration.
+If you do not need to recreate the entire environment from a Docker image, focus on the `.py` and `.sql` files, which contain the core database creation logic, schema definitions, and test data generation scripts.
 
-### Features
+Otherwise, you can deploy the full environment:
 
-* Database deployment using HCL-based infrastructure definitions
-* Dockerized setup for local and reproducible environments
-* DDL scripts for building the database from scratch
-* Automated generation of realistic test data
-* Preconfigured integration with DataLens dashboards
-* ETL and database initialization scripts
+```bash
+docker build -t postgres-with-data .
+docker run -d -p 5432:5432 postgres-with-data
 
-### Tech Stack
+psql -h localhost -p 5432 -U myuser -d mydatabase
 
-* HCL (Terraform)
-* Shell
-* Jinja
-* Python
-* PostgreSQL / PLpgSQL
-* Docker
+cd datalens
+docker compose up -d
+```
 
-Apply infrastructure, initialize the database, and load test data.
+After starting DataLens, create a new database connection and connect it to the PostgreSQL instance.
 
-### Data Model
+## Database Validation
 
-The generated dataset simulates:
+Constraints and default values are implemented and validated correctly.
 
-* YouTube channels and videos
-* Advertisement anchors and click tracking
-* Telegram bots and users
-* Telegram channels and subscriptions
-* User acquisition and conversion funnels
+For example, the `youtube_video` table contains the following column:
 
-### Test Data
+```sql
+duration INT CHECK (duration >= 0) DEFAULT NULL
+```
 
-A Python generator creates realistic synthetic data, including thousands of videos, users, subscriptions, views, clicks, and engagement metrics for development and analytics testing.
+Supported behaviors:
 
-### Purpose
+1. The field can be omitted, resulting in a `NULL` value.
+2. `NULL` can be explicitly inserted.
+3. Numeric values are validated by the `CHECK` constraint (`duration >= 0`).
 
-This project provides a reproducible analytics environment that can be deployed from scratch and immediately connected to DataLens for reporting and BI visualization.
+For example, attempting to insert `-1` will produce an error:
+
+```sql
+ERROR: new row for relation "youtube_video"
+violates check constraint "youtube_video_duration_check"
+```
+
+This demonstrates that both default values and integrity constraints are enforced as expected.
