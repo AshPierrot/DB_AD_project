@@ -1,1 +1,1 @@
-legacy code. No longer can be used.
+Project is deprecated.
